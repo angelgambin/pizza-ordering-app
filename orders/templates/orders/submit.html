@@ -1,0 +1,79 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+    Submit Order
+{% endblock %}
+
+{% block body %}
+{% if user.is_authenticated %}
+<div class="text-center"><p><b>Logged in as: </b>{{ user }} - <a href="{% url 'logout' %}">Log Out</a></p></div> 
+	<div class="container" style="text-align:left; margin-top:40px; margin-bottom: 40px; padding-left:50px; padding-right:50px; padding-top: 30px; padding-bottom: 20px; width: 60%; border-radius:20px; background-color: rgb(255, 245, 155);box-shadow: 0px 0px 10px rgb(131, 131, 131, 0.5);">
+			<form action="{% url 'submit_order' %}" method="post" name='cartsubmit' id="stripebtn">
+				{% csrf_token %}
+				<h2>Your Order is:</h2>
+				<hr>
+				<ul id="subcartitems"></ul> <!-- gets list of 'subcartitems' -->				
+				<h5 id="subtotal"></h5> <!-- gets prices 'subtotal' -->
+				<br>
+				<!-- stripe api payment form -->
+				<script 
+					src="https://checkout.stripe.com/checkout.js" 
+					class="stripe-button"
+					data-key="{{ key }}"
+					data-description="Pinocchio's Pizza"
+					data-amount="{{ total }}"
+					data-locale="auto">
+				</script>
+				<input type="hidden" name='subcart' value='Submit Order'>
+			</form>			
+			<script>
+				var get_cart = "{% url 'get_cart' user %}";
+				var send_cart = "{% url 'send_cart' %}";
+				if (window.localStorage.hasOwnProperty('cart') == false) {
+					cart = new Object();
+				} else {
+					cart = JSON.parse(window.localStorage.getItem('cart'));
+				} 
+				elements = Object.keys(cart).length;
+				total=0.;
+
+				request = new XMLHttpRequest();
+				request.open('GET', get_cart, true); 
+				request.onload = function() {
+					if (request.status >= 200 && request.status < 400) {
+						console.log('good response')
+						cart = JSON.parse(request.responseText);
+						while (typeof(cart) != "object") {
+							cart = JSON.parse(cart);
+						}
+						console.log(cart)
+						fillCart();
+					} else {
+						console.log('there was a server error')
+						}
+					};
+				request.onerror = function() {
+					console.log('there was an error')
+				};
+				request.send();
+
+				fillCart();
+
+				var c = JSON.stringify(cart);
+				document.cartsubmit.subcart.value = c;
+				
+				var btn1 = document.querySelector('#stripebtn');
+				btn1.addEventListener('click', function(){   
+					window.localStorage.removeItem('cart');
+					cart = {};
+					
+					data='username='+"{{ user }}"+'&cart='+JSON.stringify(cart);
+					xhr = new XMLHttpRequest();
+					xhr.open('POST', send_cart, true);
+					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+					xhr.send(data);
+				});
+			</script> 		
+	</div>	
+{% endif %}
+{% endblock %}

@@ -1,0 +1,92 @@
+  
+{% extends "orders/base.html" %}
+
+{% block title %}
+    Menu
+{% endblock %}
+
+{% block body %}
+{% if user.is_authenticated %} <!-- if user is authenticated display menu, if not display signup -->
+<div class="container">
+	<div class="text-center"><p><b>Logged in as: </b>{{ user }} - <a href="{% url 'logout' %}">Log Out</a></p></div>	
+		<div class="row">
+			<div class="col-6" style="text-align:left; margin-top:20px; margin-bottom: 40px; padding-left:50px; padding-right:50px; padding-top: 30px; padding-bottom: 20px; border-radius:20px; background-color: rgb(255, 245, 155);box-shadow: 0px 0px 10px rgb(131, 131, 131, 0.5);">
+				<h1>Menu</h1>
+				<hr>
+				<table>
+					<tr>
+						<td></td>
+						<td style="font-weight: bold;">Small</td> 
+						<td style="font-weight: bold;">Large</td>
+					</tr>
+					{% for c in class_names %}
+						<tr >
+							<td style="font-weight: bold;"><br>{{ c }}</td>
+						</tr>
+
+						{% for item in items %}
+							{% if item.class_name == c %}
+								<tr>
+									<td width="65%">{{ item.name }}</td>
+									<td width="25%">
+										{% if item.price %}
+										<a href="#" onclick='javascript:addToCart("{{item.class_name}}", "{{item.mtype}}", "{{item.name}}", "{{item.price}}", "{{item.num_toppings}}", "small", "{{user.username}}");'>{{ item.price }}</a>
+										{% endif %}
+									</td> 
+									<td width="25%">
+										{% if item.price_big %}
+										<a href="#" onclick='javascript:addToCart("{{item.class_name}}", "{{item.mtype}}", "{{item.name}}", "{{item.price_big}}", "{{item.num_toppings}}", "large", "{{user.username}}");'>{{ item.price_big }}
+										</a>
+										{% endif %}
+									</td>
+									<script type="text/javascript">
+										var send_cart = "{% url 'send_cart' %}";
+									</script>
+
+								</tr>
+							{% endif %}
+						{% endfor %}						
+					{% endfor %}
+				</table>
+			</div>
+			<div class="col-5" style="text-align:left; margin-top:20px; margin-left: 10px; margin-bottom: 40px; padding-left:50px; padding-right:50px; padding-top: 30px; padding-bottom: 20px;border-style: solid; border-radius:20px; border-color: rgb(214, 0, 0);box-shadow: 0px 0px 10px rgb(131, 131, 131, 0.5);">
+				<div class="cart" style="min-height: 300px;">
+					<form action="{% url 'confirm_order' %}" method="post" name='cartconf'>
+						{% csrf_token %}
+						<h2>Your Order</h2>
+						<hr>
+						<ul id="cartitems">
+						</ul>
+						<div id='toppingsdiv'>
+						</div>
+						<hr>					
+						<h5 id="total"></h5>
+						<br>
+						<input type="submit" class="btn btn-success" name='cart' value='Confirm Order', onclick="carttotal();">
+						<script type="text/javascript">
+							function carttotal() {
+								document.cartconf.cart.value = total	
+							}
+						</script>
+
+						{% if user %}
+							<script type="text/javascript">
+								var get_cart = "{% url 'get_cart' user %}";
+								showCart();
+							</script>
+						{% endif %}
+					</form>           			
+				</div>	
+			</div>
+		</div>
+	</div>
+</div>	
+{% else %}
+	<div class="container" style="text-align:center; margin-top:40px; padding-top: 30px; padding-bottom: 20px; width: 30%; border-radius:20px; background-color: rgb(255, 245, 155);box-shadow: 0px 0px 10px rgb(131, 131, 131, 0.5);">
+		<h4 style="margin-bottom: 20px;">You are not logged in</h4>
+		<p><a href="{% url 'signup' %}">Sign Up</a></p>
+		<p><a href="{% url 'login' %}">Log In</a></p>
+	</div>
+{% endif %}
+
+{% endblock %}

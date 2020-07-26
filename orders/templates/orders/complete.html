@@ -1,0 +1,14 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+    Order Completed
+{% endblock %}
+	
+{% block body %}
+<div class="text-center"><p><b>Logged is as: </b>{{ user }} - <a href="{% url 'logout' %}">Log Out</a></p></div>
+<div class="container" style="text-align:left; margin-top:40px; margin-bottom: 40px; padding-left:50px; padding-right:50px; padding-top: 30px; padding-bottom: 20px; width: 60%; border-radius:20px; background-color: rgb(255, 245, 155);box-shadow: 0px 0px 10px rgb(131, 131, 131, 0.5);">
+		<h3 class="text-center">{{ user }}, your order is complete!</h3>
+		<br>
+		<h5 style="text-align:center;"><a href="{% url 'logout' %}">Want to make a new order?</a></h5>	
+</div>
+{% endblock %}

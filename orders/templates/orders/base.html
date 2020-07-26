@@ -1,0 +1,20 @@
+{% load static %}
+{% load mytags %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script type="text/javascript" src="{% static 'orders/index.js' %}"></script>
+    </head>
+    <body>
+        <div class="text-center">
+            <img style="float:center;margin-top: 20px;" <img src="{% static "images/pinocchio.gif" %}" alt="Logo">
+            <h1>Pinocchio's <span style="color: #ff0000">Pizza</span> & <span style="color: #1f9c06">Subs</span></h1>
+            <p>74 Winthrop Street | Harvard Square | 617-876-4897</p>
+        </div>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>
